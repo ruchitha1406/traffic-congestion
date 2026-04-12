@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <title>TrafficAI Predictor</title>
 
-<!-- Google Fonts -->
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-<!-- Leaflet CSS -->
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-<!-- Custom CSS -->
+
 <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -21,7 +21,7 @@
 </header>
 
 <div class="container">
-  <!-- Left Panel -->
+ 
   <aside class="glass-card">
     <h2>Plan Your Trip</h2>
 
@@ -50,20 +50,20 @@
 
     <button id="find-btn" onclick="findRoute()">Find Route</button>
 
-    <!-- Extra Route Options -->
+    
     <div class="route-options">
       <button onclick="findRoute('shortest')">Shortest Route</button>
       <button onclick="findRoute('best')">Best Route</button>
       <button onclick="findRoute('fuel')">Fuel Efficient</button>
     </div>
 
-    <!-- Weather -->
+    
     <div id="weather-card" class="glass-card">
       <h3>Weather</h3>
       <p id="weather-info">Loading...</p>
     </div>
 
-    <!-- Result Card -->
+   
     <div id="result-card" class="glass-card hidden">
       <div id="congestion-badge"></div>
       <div id="progress-bar"><div></div></div>
@@ -71,35 +71,34 @@
       <p id="advice-box"></p>
     </div>
 
-    <!-- Nearby Hotels -->
+
     <div id="nearby-hotels" class="glass-card">
       <h3>Nearby Hotels</h3>
       <ul id="hotel-list"></ul>
     </div>
 
-    <!-- History -->
+   
     <div id="history" class="glass-card">
       <h3>Recent Searches</h3>
       <ul id="history-list"></ul>
     </div>
 
-    <!-- Voice Input -->
+   
     <button id="voice-btn">🎤 Voice Input</button>
 
-    <!-- Time to Leave -->
+   
     <div id="leave-time" class="glass-card">
       <h3>Best Time to Leave</h3>
       <p id="leave-info">Calculating...</p>
     </div>
 
-    <!-- Traffic Graph -->
+    
     <div class="glass-card">
       <h3>Real-Time Traffic</h3>
       <canvas id="traffic-graph"></canvas>
     </div>
   </aside>
 
-  <!-- Map -->
   <main>
     <div id="map"></div>
     <button id="reset-btn" class="fab">⟲</button>
@@ -110,7 +109,7 @@
   <p> students from EEE & ECE</p>
 </footer>
 
-<!-- Leaflet JS -->
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="script.js"></script>
 
