@@ -1,116 +1,386 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>TrafficAI Predictor</title>
-
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-
-<link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrafficAI - Smart Traffic Predictor</title>
+  <link rel="icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
+<!-- Header -->
 <header>
-  <h1>🚦 TrafficAI Predictor</h1>
-  <div id="status-indicator" class="connected">● Connected</div>
+  <div class="logo">
+    <span class="logo-icon">&#x1F6A6;</span>
+    <h1>TrafficAI</h1>
+  </div>
+  <div id="status-indicator" class="connected">
+    <span class="status-dot"></span>
+    Connected
+  </div>
 </header>
 
-<div class="container">
- 
-  <aside class="glass-card">
-    <h2>Plan Your Trip</h2>
+<div id="offline-banner" class="offline-banner hidden">Offline mode active: using cached route intelligence and predictive traffic fallback.</div>
 
-    <input id="source" placeholder="Source (e.g Bangalore)">
-    <input id="destination" placeholder="Destination (e.g Mysore)">
+<!-- Main Container -->
+<div class="container two-panel-layout">
+  <!-- Left Control Sidebar -->
+  <aside class="sidebar control-sidebar">
+    <div class="search-card">
+      <h2>Plan Your Trip</h2>
 
-    <label>Travel Time</label>
-    <select id="travel-hour">
-      <option value="9">9 AM</option>
-      <option value="18">6 PM</option>
-    </select>
+      <div class="input-group">
+        <label for="source">Source</label>
+        <div class="input-wrapper">
+          <span class="input-icon">&#x1F4CD;</span>
+          <input type="text" id="source" placeholder="Enter starting point (e.g., Bangalore)">
+        </div>
+      </div>
 
-    <label>Travel Day</label>
-    <select id="travel-day">
-      <option value="0">Weekday</option>
-      <option value="1">Weekend</option>
-    </select>
+      <div class="input-group">
+        <label for="via-points">Via Routes (Optional)</label>
+        <div class="input-wrapper">
+          <span class="input-icon">V</span>
+          <input type="text" id="via-points" placeholder="Add stops separated by commas (e.g., Tumkur, Chitradurga)">
+        </div>
+      </div>
 
-    <label>Vehicle Type</label>
-    <select id="vehicle-type">
-      <option value="car">Car</option>
-      <option value="bike">Bike</option>
-      <option value="bus">Bus</option>
-      <option value="truck">Truck</option>
-    </select>
+      <div class="input-group">
+        <label for="destination">Destination</label>
+        <div class="input-wrapper">
+          <span class="input-icon">&#x1F3AF;</span>
+          <input type="text" id="destination" placeholder="Enter destination (e.g., Mysore)">
+        </div>
+      </div>
 
-    <button id="find-btn" onclick="findRoute()">Find Route</button>
+      <div class="input-group">
+        <label for="trip-purpose">Purpose of Trip</label>
+        <div class="select-wrapper">
+          <select id="trip-purpose">
+            <option value="hospital">Hospital</option>
+            <option value="school">School/College</option>
+            <option value="office">Office</option>
+            <option value="temple">Temple/Religious</option>
+            <option value="airport">Airport/Station</option>
+            <option value="personal" selected>Personal</option>
+            <option value="delivery">Delivery</option>
+            <option value="tourism">Tourism</option>
+            <option value="other">Other</option>
+          </select>
+          <span class="select-icon">&#9662;</span>
+        </div>
+      </div>
 
-    
-    <div class="route-options">
-      <button onclick="findRoute('shortest')">Shortest Route</button>
-      <button onclick="findRoute('best')">Best Route</button>
-      <button onclick="findRoute('fuel')">Fuel Efficient</button>
-    </div>
+      <div class="input-group">
+        <label for="trip-priority">Priority</label>
+        <div class="select-wrapper">
+          <select id="trip-priority">
+            <option value="normal" selected>Normal</option>
+            <option value="important">Important</option>
+            <option value="urgent">Urgent</option>
+            <option value="emergency">Emergency</option>
+          </select>
+          <span class="select-icon">&#9662;</span>
+        </div>
+      </div>
 
-    
-    <div id="weather-card" class="glass-card">
-      <h3>Weather</h3>
-      <p id="weather-info">Loading...</p>
-    </div>
+      <div class="input-group">
+        <label for="travel-hour">Travel Time</label>
+        <div class="select-wrapper">
+          <select id="travel-hour">
+            <option value="6">6:00 AM</option>
+            <option value="7">7:00 AM</option>
+            <option value="8">8:00 AM</option>
+            <option value="9" selected>9:00 AM</option>
+            <option value="10">10:00 AM</option>
+            <option value="11">11:00 AM</option>
+            <option value="12">12:00 PM</option>
+            <option value="13">1:00 PM</option>
+            <option value="14">2:00 PM</option>
+            <option value="15">3:00 PM</option>
+            <option value="16">4:00 PM</option>
+            <option value="17">5:00 PM</option>
+            <option value="18">6:00 PM</option>
+            <option value="19">7:00 PM</option>
+            <option value="20">8:00 PM</option>
+            <option value="21">9:00 PM</option>
+          </select>
+          <span class="select-icon">&#9662;</span>
+        </div>
+      </div>
 
-   
-    <div id="result-card" class="glass-card hidden">
-      <div id="congestion-badge"></div>
-      <div id="progress-bar"><div></div></div>
-      <div id="route-details"></div>
-      <p id="advice-box"></p>
-    </div>
+      <div class="input-group">
+        <label for="travel-day">Travel Day</label>
+        <div class="select-wrapper">
+          <select id="travel-day">
+            <option value="0">Weekday</option>
+            <option value="1">Weekend</option>
+          </select>
+          <span class="select-icon">&#9662;</span>
+        </div>
+      </div>
 
+      <div class="input-group">
+        <label for="vehicle-type">Vehicle Type</label>
+        <div class="select-wrapper">
+          <select id="vehicle-type">
+            <option value="car">&#x1F697; Car</option>
+            <option value="bike">&#x1F3CD;&#xFE0F; Bike</option>
+            <option value="bus">&#x1F68C; Bus</option>
+            <option value="truck">&#x1F69A; Truck</option>
+          </select>
+          <span class="select-icon">&#9662;</span>
+        </div>
+      </div>
 
-    <div id="nearby-hotels" class="glass-card">
-      <h3>Nearby Hotels</h3>
-      <ul id="hotel-list"></ul>
-    </div>
+      <button id="voice-btn" class="voice-btn">
+        <span class="voice-icon">&#x1F3A4;</span>
+        Voice Input
+      </button>
 
-   
-    <div id="history" class="glass-card">
-      <h3>Recent Searches</h3>
-      <ul id="history-list"></ul>
-    </div>
+      <button id="voice-command-btn" class="voice-btn" type="button">
+        <span class="voice-icon">VC</span>
+        Voice Command (Starter)
+      </button>
 
-   
-    <button id="voice-btn">🎤 Voice Input</button>
+      <button id="find-btn" class="primary-btn" onclick="findRoute()">
+        Find Route
+      </button>
 
-   
-    <div id="leave-time" class="glass-card">
-      <h3>Best Time to Leave</h3>
-      <p id="leave-info">Calculating...</p>
-    </div>
-
-    
-    <div class="glass-card">
-      <h3>Real-Time Traffic</h3>
-      <canvas id="traffic-graph"></canvas>
+      <div class="route-options">
+        <button class="option-btn" onclick="findRoute('shortest')">
+          <span>&#x1F4CF;</span>
+          Shortest
+        </button>
+        <button class="option-btn" onclick="findRoute('best')">
+          <span>&#9889;</span>
+          Fastest
+        </button>
+        <button class="option-btn" onclick="findRoute('fuel')">
+          <span>&#x26FD;</span>
+          Eco
+        </button>
+      </div>
     </div>
   </aside>
 
-  <main>
-    <div id="map"></div>
-    <button id="reset-btn" class="fab">⟲</button>
-  </main>
+  <!-- Right Results Workspace -->
+  <section class="workspace-panel">
+    <div id="workspace-splash" class="workspace-splash">
+      <h2>Ready to Plan?</h2>
+      <p>Enter source and destination from the left panel, then click Find Route to load live map intelligence.</p>
+    </div>
+
+    <div id="workspace-loader" class="workspace-loader hidden">
+      <div class="loader-ring"></div>
+      <p>Calculating best route and loading real-time layers...</p>
+    </div>
+
+    <div id="workspace-content" class="workspace-content hidden">
+      <!-- Map Section -->
+      <main class="map-section">
+        <div id="map"></div>
+        <div id="live-badge" class="live-badge">Live</div>
+        <div class="map-tools">
+          <button id="waypoint-mode-btn" class="map-tool-btn" type="button">Add Stop Mode: Off</button>
+          <button id="ambulance-mode-btn" class="map-tool-btn ambulance-btn" type="button">Ambulance Priority: Off</button>
+          <div class="poi-toggles">
+            <label><input type="checkbox" id="poi-gas"> Gas</label>
+            <label><input type="checkbox" id="poi-charging"> Charging</label>
+            <label><input type="checkbox" id="poi-police"> Police</label>
+          </div>
+        </div>
+        <button id="locate-btn" class="fab locate-fab" title="Toggle Live Location">
+          <span>GPS</span>
+        </button>
+        <button id="reset-btn" class="fab" title="Reset Map">
+          <span>&#8635;</span>
+        </button>
+      </main>
+
+      <!-- Feature Grid -->
+      <section class="features-grid">
+        <div id="place-preview-card" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x1F5BC;&#xFE0F;</span>
+            <h3>Route Place Preview</h3>
+          </div>
+          <div class="place-images-grid">
+            <div class="place-image-box">
+              <p id="source-image-label">Source</p>
+              <img id="source-image" alt="Source preview">
+            </div>
+            <div class="place-image-box">
+              <p id="destination-image-label">Destination</p>
+              <img id="destination-image" alt="Destination preview">
+            </div>
+          </div>
+        </div>
+
+        <div id="ambulance-card" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x1F691;</span>
+            <h3>Emergency Corridor</h3>
+          </div>
+          <p id="ambulance-status">Ambulance priority is in standby.</p>
+          <p id="ambulance-distance">Distance to you: --</p>
+          <p id="ambulance-eta">ETA to corridor: --</p>
+        </div>
+
+        <div id="weather-card" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x1F324;&#xFE0F;</span>
+            <h3>Weather</h3>
+          </div>
+          <p id="weather-info">Checking weather conditions...</p>
+        </div>
+
+        <div id="result-card" class="info-card hidden">
+          <div class="card-header">
+            <span class="card-icon">&#x1F4CA;</span>
+            <h3>Route Analysis</h3>
+          </div>
+          <div id="congestion-badge"></div>
+          <div id="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <div id="route-details"></div>
+          <p id="advice-box"></p>
+
+          <div class="analysis-section">
+            <h4>Fuel / Energy Estimator</h4>
+            <p id="fuel-estimate">Run a route to estimate fuel and cost.</p>
+          </div>
+
+          <div class="analysis-section">
+            <h4>Weather Impact</h4>
+            <p id="weather-impact">Weather impact will appear after route analysis.</p>
+          </div>
+
+          <div class="analysis-section">
+            <h4>CO2 Footprint</h4>
+            <p id="co2-footprint">CO2 estimate will appear after route analysis.</p>
+          </div>
+
+          <div class="analysis-section">
+            <h4>Alternate Route Comparison</h4>
+            <ul id="route-compare-list"></ul>
+          </div>
+
+          <div class="analysis-section">
+            <h4>Live Incident Reports</h4>
+            <ul id="incident-list"></ul>
+          </div>
+
+          <div class="analysis-section">
+            <h4>Multi-Modal Suggestion</h4>
+            <p id="multimodal-suggestion">Suggestions will appear for heavy traffic scenarios.</p>
+          </div>
+
+          <div id="smart-alert" class="smart-alert hidden"></div>
+        </div>
+
+        <div id="leave-time" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x23F0;</span>
+            <h3>Best Time to Leave</h3>
+          </div>
+          <p id="leave-info">Enter route to calculate...</p>
+          <div class="future-traffic-box">
+            <label for="future-traffic-slider">Future Traffic (+<span id="future-hour-value">0</span>h)</label>
+            <input id="future-traffic-slider" type="range" min="0" max="23" value="0">
+            <p id="future-traffic-note">Predicted using historical pattern simulation.</p>
+          </div>
+        </div>
+
+        <div id="traffic-hotspot-card" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x1F6A7;</span>
+            <h3>Real-Time Traffic Places</h3>
+          </div>
+          <ul id="traffic-hotspot-list"></ul>
+        </div>
+
+        <div id="ev-card" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x26A1;</span>
+            <h3>EV Charging & Wait Time</h3>
+          </div>
+          <ul id="ev-list"></ul>
+        </div>
+
+        <div id="fatigue-card" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x1F6DF;&#xFE0F;</span>
+            <h3>Driver Safety</h3>
+          </div>
+          <div class="fatigue-status-row">
+            <span id="fatigue-status-badge" class="fatigue-badge off">Monitoring Off</span>
+            <span id="fatigue-risk">Risk: --</span>
+          </div>
+          <div class="fatigue-meter">
+            <div id="fatigue-meter-fill" class="fatigue-meter-fill"></div>
+          </div>
+          <p id="fatigue-details">Start monitoring to detect eye-closure and yawn patterns. Fallback mode is used if camera AI is unavailable.</p>
+          <div class="fatigue-actions">
+            <button id="fatigue-start-btn" class="calendar-btn" type="button">Start Monitor</button>
+            <button id="fatigue-stop-btn" class="calendar-btn" type="button">Stop</button>
+          </div>
+          <video id="fatigue-video" autoplay muted playsinline></video>
+          <p id="fatigue-alert-log">No active fatigue alerts.</p>
+        </div>
+
+        <div id="calendar-card" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">CAL</span>
+            <h3>Calendar Sync</h3>
+          </div>
+          <div class="calendar-actions">
+            <button id="calendar-google-btn" class="calendar-btn" type="button">Connect Google</button>
+            <button id="calendar-outlook-btn" class="calendar-btn" type="button">Connect Outlook</button>
+          </div>
+          <p id="calendar-sync-status">Not connected. Skeleton integration ready for future OAuth.</p>
+        </div>
+
+        <div id="nearby-hotels" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x1F3E8;</span>
+            <h3>Nearby Hotels</h3>
+          </div>
+          <ul id="hotel-list"></ul>
+        </div>
+
+        <div class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x1F4C8;</span>
+            <h3>Traffic Trends</h3>
+          </div>
+          <canvas id="traffic-graph"></canvas>
+        </div>
+
+        <div id="history" class="info-card">
+          <div class="card-header">
+            <span class="card-icon">&#x1F550;</span>
+            <h3>Recent Searches</h3>
+          </div>
+          <ul id="history-list"></ul>
+        </div>
+      </section>
+    </div>
+  </section>
 </div>
 
+<!-- Footer -->
 <footer>
-  <p> students from EEE & ECE</p>
+  <p>students from EEE &amp; ECE</p>
 </footer>
 
-
+<!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
 <script src="script.js"></script>
 
 </body>
